@@ -15,11 +15,11 @@ namespace AvaloniaMVVMExplorer.ViewModels
     internal class MainWindowViewModel : ViewModelBase
     {
         #region Properties
-        private string? __currentFilePath;
+        private string? currentFilePath;
         public string? CurrentFilePath
         {
-            get { return __currentFilePath; } 
-            set { __currentFilePath = value; OnPropertyChanged(); }
+            get { return currentFilePath; } 
+            set { currentFilePath = value; OnPropertyChanged(); }
         }
 
         private ObservableCollection<FileEntityViewModel>? directoriesAndFiles;

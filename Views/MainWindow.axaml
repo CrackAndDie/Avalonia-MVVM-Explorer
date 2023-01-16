@@ -12,11 +12,9 @@
         WindowState="Maximized"
         WindowStartupLocation="CenterScreen">
 
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+    <!-- <Design.DataContext>
         <vm:MainWindowViewModel/>
-    </Design.DataContext>
+    </Design.DataContext> -->
 
     <Grid>
         <Grid.RowDefinitions>
@@ -24,8 +22,8 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
-        <TextBox Grid.Row="0" 
-                 Text="{Binding CurrentFilePath}"/>
+        <TextBox Grid.Row="0"
+                 Text="{Binding CurrentFilePath, Mode=TwoWay}"/>
 
         <ListBox Grid.Row="1" 
                  x:Name="PathsLB"
