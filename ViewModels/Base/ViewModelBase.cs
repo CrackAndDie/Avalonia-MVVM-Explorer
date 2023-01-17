@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace AvaloniaMVVMExplorer.ViewModels.Base
 {
-    internal class ViewModelBase : ReactiveObject
+    internal class ViewModelBase : INotifyPropertyChanged
     {
         #region PropetryChangedHandler
-        public event PropertyChangedEventHandler? BasePropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
-            BasePropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
     }

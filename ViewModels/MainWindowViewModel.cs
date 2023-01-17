@@ -6,76 +6,73 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using AvaloniaMVVMExplorer.ViewModels.Base;
-using AvaloniaMVVMExplorer.ViewModels.Commands;
-using AvaloniaMVVMExplorer.ViewModels.FileViewModels;
+using System.Xml.Linq;
 using AvaloniaMVVMExplorer.ViewModels.FileViewModels.Base;
+using System.Linq;
+using AvaloniaMVVMExplorer.ViewModels.Commands;
 
 namespace AvaloniaMVVMExplorer.ViewModels
 {
     internal class MainWindowViewModel : ViewModelBase
     {
         #region Properties
-        private string? currentFilePath;
-        public string? CurrentFilePath
+        private ObservableCollection<DirectoryTabItemViewModel> directoryTabItems = new ObservableCollection<DirectoryTabItemViewModel>();
+        public ObservableCollection<DirectoryTabItemViewModel> DirectoryTabItems
         {
-            get { return currentFilePath; } 
-            set { currentFilePath = value; OnPropertyChanged(); }
+            get { return directoryTabItems; }
+            set { directoryTabItems = value; OnPropertyChanged(); }
         }
 
-        private ObservableCollection<FileEntityViewModel>? directoriesAndFiles;
-        public ObservableCollection<FileEntityViewModel>? DirectoriesAndFiles
+        private DirectoryTabItemViewModel currentDirectoryTabItem;
+        public DirectoryTabItemViewModel CurrentDirectoryTabItem
         {
-            get { return directoriesAndFiles; }
-            set { directoriesAndFiles = value; OnPropertyChanged(); }
-        }
-
-        private FileEntityViewModel? selectedFileEntity;
-        public FileEntityViewModel? SelectedFileEntity
-        {
-            get { return selectedFileEntity; }
-            set { selectedFileEntity = value; OnPropertyChanged(); }
+            get { return currentDirectoryTabItem; }
+            set { currentDirectoryTabItem = value; OnPropertyChanged(); }
         }
         #endregion
 
         #region Commands
-        public ICommand OpenCommand { get; }
+        public ICommand AddTabItemCommand { get; }
         #endregion
 
         #region Constructor
         public MainWindowViewModel()
         {
-            DirectoriesAndFiles = new ObservableCollection<FileEntityViewModel>();
-
-            OpenCommand = new DelegateCommand(Open);
-
-            foreach (var logicalDrive in Directory.GetLogicalDrives())
-            {
-                DirectoriesAndFiles.Add(new DirectoryViewModel(logicalDrive));
-            }
+            AddTabItemCommand = new DelegateCommand(OnAddTabItem);
+            AddTabItemViewModel();
+            AddTabItemViewModel();
+            AddTabItemViewModel();
         }
         #endregion
 
         #region CommandMethods
-        private void Open(object parameter)
+        private void OnAddTabItem(object parameter)
         {
-            if (parameter is DirectoryViewModel directoryViewModel)
+            AddTabItemViewModel();
+        }
+        #endregion
+
+        #region PrivateMethods
+        private void AddTabItemViewModel()
+        {
+            var vm = new DirectoryTabItemViewModel();
+            vm.TabClose += OnTabClose;
+            DirectoryTabItems.Add(vm);
+            CurrentDirectoryTabItem = vm;
+        }
+
+        private void OnTabClose(object sender, EventArgs args)
+        {
+            if (sender is DirectoryTabItemViewModel directoryTabItemViewModel)
             {
-                CurrentFilePath = directoryViewModel.FullName;
-
-                DirectoriesAndFiles?.Clear();
-
-                var directoryInfo = new DirectoryInfo(CurrentFilePath ?? "");
-
-                foreach (var directory in directoryInfo.GetDirectories()) 
-                {
-                    DirectoriesAndFiles?.Add(new DirectoryViewModel(directory));
-                }
-
-                foreach (var file in directoryInfo.GetFiles())
-                {
-                    DirectoriesAndFiles?.Add(new FileViewModel(file));
-                }
+                CloseTab(directoryTabItemViewModel);
             }
+        }
+
+        private void CloseTab(DirectoryTabItemViewModel directoryTabItemViewModel)
+        {
+            directoryTabItemViewModel.TabClose -= OnTabClose;
+            DirectoryTabItems.Remove(directoryTabItemViewModel);
         }
         #endregion
     }

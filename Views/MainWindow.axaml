@@ -7,6 +7,7 @@
         xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="AvaloniaMVVMExplorer.Views.MainWindow"
+        xmlns:local="using:AvaloniaMVVMExplorer.Views.Controls"
         Icon="/Assets/avalonia-logo.ico"
         Title="AvaloniaMVVMExplorer"
         WindowState="Maximized"
@@ -17,32 +18,50 @@
     </Design.DataContext> -->
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        
-        <TextBox Grid.Row="0"
-                 Text="{Binding CurrentFilePath, Mode=TwoWay}"/>
-
-        <ListBox Grid.Row="1" 
-                 x:Name="PathsLB"
-                 Items="{Binding DirectoriesAndFiles}" 
-                 SelectedItem="{Binding SelectedFileEntity}">
-            <i:Interaction.Behaviors>
-                <ia:EventTriggerBehavior EventName="DoubleTapped">
-                    <ia:InvokeCommandAction Command="{Binding OpenCommand}"
-                                            CommandParameter="{Binding ElementName=PathsLB, Path=SelectedItem}"/>
-                </ia:EventTriggerBehavior>
-            </i:Interaction.Behaviors>
-            <ListBox.ItemTemplate>
+        <TabControl Items="{Binding DirectoryTabItems}"
+                    SelectedItem="{Binding CurrentDirectoryTabItem}">
+            <TabControl.Template>
+                <ControlTemplate>
+                    <Border Padding="{TemplateBinding Padding}"
+                            HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <ItemsPresenter Name="PART_ItemsPresenter"
+                                            ItemTemplate="{TemplateBinding ItemTemplate}"
+                                            Items="{TemplateBinding Items}"
+                                            ItemsPanel="{TemplateBinding ItemsPanel}" />
+                                <Button Content="+" Command="{Binding AddTabItemCommand}"/>
+                            </StackPanel>
+                            
+                            <ContentPresenter Name="PART_SelectedContentHost"
+                                              Margin="{TemplateBinding Padding}"
+                                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              Content="{TemplateBinding SelectedContent}"
+                                              ContentTemplate="{TemplateBinding SelectedContentTemplate}" />
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </TabControl.Template>
+            <TabControl.ItemTemplate>
                 <DataTemplate>
-                    <Grid >
+                    <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding Name}"/>
-                    </Grid>
+                        <Button Command="{Binding Close}" Content="X"/>
+                    </StackPanel>
                 </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <local:DirectoryTabItem/>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
     </Grid>
 
 </Window>

@@ -21,10 +21,7 @@ namespace AvaloniaMVVMExplorer.ViewModels.Commands
 
         public void Execute(object? parameter)
         {
-            if (parameter != null)
-            {
-                command?.Invoke(parameter);
-            }
+            command?.Invoke(parameter);
         }
     }
 }
